@@ -1,0 +1,10 @@
+dependencies {
+    compile 'javax.servlet:servlet-api:2.5'
+}
+
+
+jar {
+    manifest {
+        instruction 'Bundle-Activator', 'eu.basileus.osgi.publicapi.Activator'
+    }
+}

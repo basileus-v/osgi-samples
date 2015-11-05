@@ -1,0 +1,32 @@
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+version = '1.0.0'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'osgi'
+    apply plugin: 'idea'
+
+    version = rootProject.version
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile 'org.osgi:org.osgi.core:4.3.1'
+        compile 'org.osgi:org.osgi.compendium:4.3.1'
+    }
+
+    jar {
+        manifest {
+            attributes 'Provider': 'basileus.eu'
+            instruction 'Bundle-Vendor', 'Vassili Jakovlev'
+        }
+    }
+
+}
