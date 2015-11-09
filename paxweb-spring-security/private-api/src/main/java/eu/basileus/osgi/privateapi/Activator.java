@@ -1,6 +1,7 @@
 package eu.basileus.osgi.privateapi;
 
 import eu.basileus.osgi.common.WebContainerServiceTracker;
+import eu.basileus.osgi.security.AuthenticationFilter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -14,7 +15,8 @@ public class Activator implements BundleActivator {
 
   public void start(BundleContext context) throws Exception {
     httpTracker = new WebContainerServiceTracker(context, new PrivateApiServlet(), API_URL);
-    httpTracker.setHttpContext(new AuthHttpContext());
+    httpTracker.setFilter(new AuthenticationFilter());
+//    httpTracker.setFilter(new DelegatingFilterProxy);
     httpTracker.open();
   }
 

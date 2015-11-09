@@ -1,24 +1,30 @@
-package eu.basileus.osgi.privateapi;
+package eu.basileus.osgi.security;
 
 import org.osgi.service.http.HttpContext;
 
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Base64;
 
-public class AuthHttpContext implements HttpContext {
+/**
+ * @author Vassili Jakovlev
+ */
+public class AuthenticationFilter implements Filter {
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {
+  }
 
   @Override
-  public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    if (!isAuthenticated(req)) {
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    if (!isAuthenticated((HttpServletRequest) request)) {
       // FIXME: Basic auth is for proof of concept only
-      res.addHeader("WWW-Authenticate", "Basic realm=\"FooBarBaz\"");
-      res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return false;
+      HttpServletResponse httpResponse = (HttpServletResponse) response;
+      httpResponse.addHeader("WWW-Authenticate", "Basic realm=\"FooBarBaz\"");
+      httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
-    return true;
+    chain.doFilter(request, response);
   }
 
   protected boolean isAuthenticated(HttpServletRequest request) {
@@ -26,7 +32,7 @@ public class AuthHttpContext implements HttpContext {
     if (authHeader == null) {
       return false;
     }
-    request.setAttribute(AUTHENTICATION_TYPE, HttpServletRequest.BASIC_AUTH);
+    request.setAttribute(HttpContext.AUTHENTICATION_TYPE, HttpServletRequest.BASIC_AUTH);
 
     String usernameAndPassword = new String(Base64.getDecoder().decode(authHeader.substring(6)));
 
@@ -36,18 +42,13 @@ public class AuthHttpContext implements HttpContext {
 
     boolean success = ((username.equals("admin") && password.equals("admin")));
     if (success) {
-      request.setAttribute(REMOTE_USER, "admin");
+      request.setAttribute(HttpContext.REMOTE_USER, "admin");
     }
     return success;
   }
 
   @Override
-  public URL getResource(String s) {
-    return null;
-  }
+  public void destroy() {
 
-  @Override
-  public String getMimeType(String s) {
-    return null;
   }
 }

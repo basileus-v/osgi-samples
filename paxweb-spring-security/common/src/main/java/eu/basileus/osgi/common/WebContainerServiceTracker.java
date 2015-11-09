@@ -3,10 +3,10 @@ package eu.basileus.osgi.common;
 import org.ops4j.pax.web.service.WebContainer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 
+import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
@@ -17,7 +17,7 @@ public class WebContainerServiceTracker extends ServiceTracker<WebContainer, Web
 
   private final String apiUrl;
   private final HttpServlet httpServlet;
-  private HttpContext httpContext;
+  private Filter filter;
 
   public WebContainerServiceTracker(BundleContext bundleContext, HttpServlet httpServlet, String apiUrl) {
     super(bundleContext, WebContainer.class.getName(), null);
@@ -28,11 +28,13 @@ public class WebContainerServiceTracker extends ServiceTracker<WebContainer, Web
   public WebContainer addingService(ServiceReference<WebContainer> reference) {
     WebContainer webContainer = context.getService(reference);
     try {
-      webContainer.registerServlet(apiUrl, httpServlet, null, httpContext);
+      webContainer.registerServlet(apiUrl, httpServlet, null, null);
     } catch (ServletException | NamespaceException e) {
       throw new RuntimeException("Failed to register " + httpServlet.getServletName() + " at " + apiUrl);
     }
-    webContainer.registerFilter(new AuthenticationFilter(), new String[]{"/api/v2/*"}, null, null, null);
+    if (filter != null) {
+      webContainer.registerFilter(filter, new String[]{apiUrl}, null, null, null);
+    }
     return webContainer;
   }
 
@@ -40,7 +42,7 @@ public class WebContainerServiceTracker extends ServiceTracker<WebContainer, Web
     service.unregister(apiUrl);
   }
 
-  public void setHttpContext(HttpContext httpContext) {
-    this.httpContext = httpContext;
+  public void setFilter(Filter filter) {
+    this.filter = filter;
   }
 }
