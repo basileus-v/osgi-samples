@@ -34,7 +34,7 @@ public class AuthHttpContext implements HttpContext {
     String username = usernameAndPassword.substring(0, userNameIndex);
     String password = usernameAndPassword.substring(userNameIndex + 1);
 
-    boolean success = ((username.equals("admin") && password.equals("admin")));
+    boolean success = username.equals("admin") && password.equals("admin");
     if (success) {
       request.setAttribute(REMOTE_USER, "admin");
     }
