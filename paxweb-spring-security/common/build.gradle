@@ -1,8 +1,6 @@
 dependencies {
     compile 'javax.servlet:servlet-api:2.5'
     compile 'org.ops4j.pax.web:pax-web-api:4.2.2'
-    compile 'org.springframework.security:spring-security-web:4.+'
-    compile 'org.springframework.security:spring-security-config:4.+'
 
 }
 

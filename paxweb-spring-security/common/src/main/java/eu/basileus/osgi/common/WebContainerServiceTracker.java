@@ -5,9 +5,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContextEvent;
@@ -32,12 +29,6 @@ public class WebContainerServiceTracker extends ServiceTracker<WebContainer, Web
 
   public WebContainer addingService(ServiceReference<WebContainer> reference) {
     WebContainer webContainer = context.getService(reference);
-
-    XmlWebApplicationContext ctx = new XmlWebApplicationContext();
-    ctx.setConfigLocation("test.xml");
-//    ctx.register(SecurityConfig.class);
-//    ctx.scan("eu.basileus.osgi.common");
-    webContainer.registerEventListener(new ContextLoaderListener(ctx), null);
 
     webContainer.registerEventListener(new ServletContextListener() {
       @Override
