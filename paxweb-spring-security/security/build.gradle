@@ -1,3 +1,32 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.standardout:bnd-platform:1.2.0'
+    }
+}
+
+apply plugin: 'org.standardout.bnd-platform'
+
 dependencies {
     compile 'javax.servlet:servlet-api:2.5'
+    platform 'com.nimbusds:oauth2-oidc-sdk:4.17'
+    compile 'com.nimbusds:oauth2-oidc-sdk:4.17'
+    compile 'org.mitre:openid-connect-client:1+'
+    platform 'org.mitre:openid-connect-client:1+'
+}
+
+platform {
+	override {
+		//optionalImport '*groovy*'
+		//optionalImport 'javax*'
+		//optionalImport 'joptsimple*'
+		optionalImport '*'
+	}
+}
+
+task deploy(type: Copy) {
+	from jar
+	into "/nortal/karafs/karaf/deploy"
 }

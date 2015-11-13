@@ -27,6 +27,7 @@ subprojects {
         providedCompile 'org.osgi:org.osgi.compendium:5.0.0'
         providedCompile 'javax.servlet:servlet-api:2.5'
         providedCompile 'org.ops4j.pax.web:pax-web-api:4.2.2'
+        runtime 'org.slf4j:slf4j-simple:1+'
     }
 
     jar {

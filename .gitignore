@@ -9,6 +9,13 @@
 hs_err_pid*
 
 .gradle
+build
 
 .idea
 *.iml
+
+#Eclipse
+.classpath
+.settings
+.project
+bin
