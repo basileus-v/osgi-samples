@@ -17,9 +17,16 @@ subprojects {
         mavenCentral()
     }
 
+    configurations {
+        providedCompile
+        compile.extendsFrom(providedCompile)
+    }
+
     dependencies {
-        compile 'org.osgi:org.osgi.core:5.0.0'
-        compile 'org.osgi:org.osgi.compendium:5.0.0'
+        providedCompile 'org.osgi:org.osgi.core:5.0.0'
+        providedCompile 'org.osgi:org.osgi.compendium:5.0.0'
+        providedCompile 'javax.servlet:servlet-api:2.5'
+        providedCompile 'org.ops4j.pax.web:pax-web-api:4.2.2'
     }
 
     jar {
@@ -29,4 +36,10 @@ subprojects {
         }
     }
 
+    task copyRuntimeLibs(type: Copy) {
+        into rootProject.projectDir.path +  "/.runtime/libs"
+        //from configurations.testRuntime - configurations.runtime
+        from configurations.runtime - configurations.providedCompile
+//        from configurations.providedCompile
+    }
 }

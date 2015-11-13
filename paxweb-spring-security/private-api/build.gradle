@@ -1,6 +1,7 @@
 dependencies {
     compile project(':common')
     compile project(':security')
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1'
 }
 
 

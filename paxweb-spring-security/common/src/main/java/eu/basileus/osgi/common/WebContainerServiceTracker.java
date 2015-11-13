@@ -11,15 +11,18 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import java.util.Dictionary;
 
 /**
  * @author Vassili Jakovlev
  */
 public class WebContainerServiceTracker extends ServiceTracker<WebContainer, WebContainer> {
 
+  private WebContainer webContainer;
   private final String apiUrl;
   private final HttpServlet httpServlet;
   private Filter filter;
+  private Dictionary<String, String> servletParams;
 
   public WebContainerServiceTracker(BundleContext bundleContext, HttpServlet httpServlet, String apiUrl) {
     super(bundleContext, WebContainer.class.getName(), null);
@@ -27,22 +30,15 @@ public class WebContainerServiceTracker extends ServiceTracker<WebContainer, Web
     this.apiUrl = apiUrl;
   }
 
+  @Override
+  public void close() {
+    super.close();
+  }
+
   public WebContainer addingService(ServiceReference<WebContainer> reference) {
-    WebContainer webContainer = context.getService(reference);
-
-    webContainer.registerEventListener(new ServletContextListener() {
-      @Override
-      public void contextInitialized(ServletContextEvent sce) {
-        System.out.printf("***** context initialized \n\n\n\n\n");
-      }
-
-      @Override
-      public void contextDestroyed(ServletContextEvent sce) {
-
-      }
-    }, null);
+    webContainer = context.getService(reference);
     try {
-      webContainer.registerServlet(apiUrl, httpServlet, null, null);
+      webContainer.registerServlet(apiUrl, httpServlet, servletParams, null);
     } catch (ServletException | NamespaceException e) {
       throw new RuntimeException("Failed to register " + httpServlet.getServletName() + " at " + apiUrl);
     }
@@ -54,10 +50,24 @@ public class WebContainerServiceTracker extends ServiceTracker<WebContainer, Web
   }
 
   public void removedService(ServiceReference<WebContainer> reference, WebContainer service) {
-    service.unregister(apiUrl);
+    if (webContainer == service) {
+      unregisterServlet();
+      webContainer = null;
+    }
+    super.removedService(reference, service);
+  }
+
+  private void unregisterServlet() {
+    if (webContainer != null) {
+      webContainer.unregisterServlet(httpServlet);
+    }
   }
 
   public void setFilter(Filter filter) {
     this.filter = filter;
+  }
+
+  public void setServletParams(Dictionary<String, String> servletParams) {
+    this.servletParams = servletParams;
   }
 }
