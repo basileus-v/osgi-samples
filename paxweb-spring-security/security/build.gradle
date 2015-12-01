@@ -15,6 +15,9 @@ dependencies {
     compile 'com.nimbusds:oauth2-oidc-sdk:4.17'
     compile 'org.mitre:openid-connect-client:1+'
     platform 'org.mitre:openid-connect-client:1+'
+    compile 'com.javaslang:javaslang:2.0.0-RC1'
+    platform 'com.javaslang:javaslang:2.0.0-RC1'
+    compile 'org.projectlombok:lombok:1+'
 }
 
 platform {
