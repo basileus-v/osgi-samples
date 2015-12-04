@@ -6,10 +6,20 @@ repositories {
 
 version = '2.0.pax'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.standardout:bnd-platform:1.2.0'
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'osgi'
     apply plugin: 'idea'
+	apply plugin: 'org.standardout.bnd-platform'
 
     version = rootProject.version
 
@@ -21,6 +31,10 @@ subprojects {
         providedCompile
         compile.extendsFrom(providedCompile)
     }
+    
+    configurations.platform {
+    	transitive = false
+    }
 
     dependencies {
         providedCompile 'org.osgi:org.osgi.core:5.0.0'
@@ -29,6 +43,13 @@ subprojects {
         providedCompile 'org.ops4j.pax.web:pax-web-api:4.2.2'
         runtime 'org.slf4j:slf4j-simple:1+'
     }
+    
+    platform {
+    	useBndHashQualifiers = false
+	 	bnd {
+    		optionalImport '*'
+    	}
+    }
 
     jar {
         manifest {
@@ -36,11 +57,23 @@ subprojects {
             instruction 'Bundle-Vendor', 'Vassili Jakovlev'
         }
     }
+    
+    task deploy(type: Copy) {
+		from jar
+		into "/nortal/karafs/karaf/deploy"
+	}
 
     task copyRuntimeLibs(type: Copy) {
         into rootProject.projectDir.path +  "/.runtime/libs"
         //from configurations.testRuntime - configurations.runtime
-        from configurations.runtime - configurations.providedCompile
+        from configurations.runtime - configurations.providedCompile - configurations.platform
 //        from configurations.providedCompile
     }
+    
+    task copyBundles(type: Copy) {
+    	into rootProject.projectDir.path + "/.runtime/bundles"
+    	from new File(project.buildDir, 'plugins')
+    }
+    
+    copyBundles.dependsOn(bundles)
 }

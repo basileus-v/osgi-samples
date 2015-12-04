@@ -1,35 +1,29 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'org.standardout:bnd-platform:1.2.0'
-    }
-}
-
-apply plugin: 'org.standardout.bnd-platform'
-
 dependencies {
     compile 'javax.servlet:servlet-api:2.5'
-    platform 'com.nimbusds:oauth2-oidc-sdk:4.17'
     compile 'com.nimbusds:oauth2-oidc-sdk:4.17'
     compile 'org.mitre:openid-connect-client:1+'
     platform 'org.mitre:openid-connect-client:1+'
     compile 'com.javaslang:javaslang:2.0.0-RC1'
-    platform 'com.javaslang:javaslang:2.0.0-RC1'
     compile 'org.projectlombok:lombok:1+'
+    compile 'org.springframework.security:spring-security-web:3.2.8.RELEASE'
+    compile 'org.springframework.security:spring-security-config:3.2.8.RELEASE'
+    compile 'org.springframework.security:spring-security-ldap:3.2.8.RELEASE'
+    compile 'org.springframework.security:spring-security-aspects:3.2.8.RELEASE'
+    platform 'org.apache.httpcomponents:httpcore:4.3.3'
+    platform 'org.apache.httpcomponents:httpclient:4.3.6'
+    platform 'org.springframework.ldap:spring-ldap-core:1.3.2.RELEASE'
+    
+    providedCompile 'org.springframework:spring-beans:4.1.7.RELEASE'
+    providedCompile 'org.springframework:spring-expression:4.1.7.RELEASE'
+    providedCompile 'org.springframework:spring-aop:4.1.7.RELEASE'
+    providedCompile 'org.springframework:spring-context:4.1.7.RELEASE'
+    providedCompile 'org.springframework:spring-web:4.1.7.RELEASE'
+    providedCompile 'org.springframework:spring-webmvc:4.1.7.RELEASE'
+    providedCompile 'org.springframework:spring-test:4.1.7.RELEASE'
 }
 
 platform {
-	override {
-		//optionalImport '*groovy*'
-		//optionalImport 'javax*'
-		//optionalImport 'joptsimple*'
-		optionalImport '*'
+	bnd(':openid-connect-client') {
+		prependImport "org.springframework.security.authentication"
 	}
-}
-
-task deploy(type: Copy) {
-	from jar
-	into "/nortal/karafs/karaf/deploy"
 }
