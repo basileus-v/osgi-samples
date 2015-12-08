@@ -45,7 +45,7 @@ public class Verifiers {
 
 		Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
 		if (now.after(claims.getExpirationTime())) {
-			return "Id Token is expired: " + claims.getExpirationTime();
+			return "Expired: " + claims.getExpirationTime();
 		}
 		return null;
 	}
@@ -63,7 +63,7 @@ public class Verifiers {
 
 	public static String issueTime(int timeSkewAllowance, JWTClaimsSet claims) {
 		if (claims.getIssueTime() == null) {
-			return "No required issed-at claim";
+			return "No required issued-at claim";
 		}
 
 		Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
