@@ -1,0 +1,13 @@
+1. Boot-install the following features in karaf 4.0.3 (i.e., add the following to featuresBoot in etc/org.apache.karaf.features.cfg):
+    http, \
+    spring/4.1.7.RELEASE_2, \
+    spring-web/4.1.7.RELEASE_2, \
+    spring-test/4.1.7.RELEASE_2
+
+2. Gather lib jars to a clean karaf's deploy dir from the following:
+	a) Run gradle copyRuntimeLibs, take *.jar files from .runtime/libs
+		# These are unmodified libs, non-osgi ones will automatically be wrapped (with all optional imports) by Karaf's wrap deployer. 
+		# (But wrap deployer does not add versions to exported packages!)
+	b) Run gradle copyBundles, take *.jar files from .runtime/bundles
+		# These are libs osgified via bnd-platform plugin.
+		# Either because of export-versions or because some non-optional import is needed. 
